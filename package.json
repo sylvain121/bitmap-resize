@@ -1,0 +1,26 @@
+{
+  "name": "node-bitmap-resize",
+  "version": "1.0.0",
+  "description": "cpp bitmap resize engine",
+  "main": "index.js",
+  "dependencies": {
+    "bindings": "^1.2.1",
+    "nan": "^2.5.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "node-gyp rebuild"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sylvain121/node-bitmap-resize.git"
+  },
+  "author": "sylvain121",
+  "license": "ISC",
+  "gypfile": true,
+  "bugs": {
+    "url": "https://github.com/sylvain121/node-bitmap-resize/issues"
+  },
+  "homepage": "https://github.com/sylvain121/node-bitmap-resize#readme"
+}
