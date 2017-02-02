@@ -1,54 +1,60 @@
 #include <nan.h>
+#include <iostream>
 
 using namespace v8;
+using v8::FunctionTemplate;
 
-void resize(const Nan::FunctionCallbackInfo<Value>& info) {
 
-  if (info.Length() < 5) {
-    //TODO set correct argument
-    Nan::ThrowTypeError("Wrong number of arguments");
-    return;
+NAN_METHOD(resize) 
+{
+
+  if(info.Length() < 5) 
+  {
+
+    return Nan::ThrowError(Nan::TypeError("Too few arguments"));
 
   }
-
   int width = info[1]->NumberValue();
   int height = info[2]->NumberValue();
   int desWidth = info[3]->NumberValue();
   int desHeight = info[4]->NumberValue();
-  Local<Object> srcObject = info[0].As<Object>();
-
-  unsigned char* srcBitmap = (unsigned char*) node::Buffer::Data(srcObject);
-  unsigned char desBitmap[desWidth*desHeight*4]; 
-
-  double w_ratio = width/desWidth;
-  double y_ratio = height/desHeight;
-
-  for(var i=0; i< desHeight ; i++){
-    for(var j = 0; j < desWidth; i++) {
-      double px = j*x_ratio;
-      double py = i*y_ratio;
-
-      desBitmap[((i*desWidth)+j)*4] = srcBitmap[((py*width)+px)*4];
-      desBitmap[((i*desWidth)+j)*4+1] = srcBitmap[((py*width)+px)*4+1];
-      desBitmap[((i*desWidth)+j)*4+2] = srcBitmap[((py*width)+px)*4+2];
-      desBitmap[((i*desWidth)+j)*4+3] = srcBitmap[((py*width)+px)*4+3];
-      
+  Local<Object> srcBitmap = info[0].As<Object>();
+  if(!node::Buffer::HasInstance(srcBitmap))
+  {
+    return Nan::ThrowError(Nan::TypeError("Invalid source buffer"));
+  }
 
 
+  unsigned char* srcBitmapData = (unsigned char*) node::Buffer::Data(srcBitmap);
+  
+  Local<Object> resizedBitmap;
+  int desBitmapDataSize = desWidth*desHeight*4;
+  unsigned char *destBitmapData = (unsigned char*) malloc(sizeof(unsigned char) * desBitmapDataSize); //TODO only for 32bit per pixel
+
+  double w_ratio =  (double) width/(double) desWidth;
+  double y_ratio =  (double) height/(double) desHeight;
+
+  for(int i=0; i< desHeight ; i++){
+    for(int j = 0; j < desWidth; j++) {
+      int px = (int) j*w_ratio;
+      int py = (int) i*y_ratio;
+
+     *(destBitmapData + ((i*desWidth)+j)*4) = *(srcBitmapData + ((py*width)+px)*4);
+     *(destBitmapData + ((i*desWidth)+j)*4+1) = *(srcBitmapData + ((py*width)+px)*4+1);
+     *(destBitmapData + ((i*desWidth)+j)*4+2) = *(srcBitmapData + ((py*width)+px)*4+2);
+     *(destBitmapData + ((i*desWidth)+j)*4+3) = *(srcBitmapData + ((py*width)+px)*4+3);
     }
   }
 
-  double arg0 = info[0]->NumberValue();
-  double arg1 = info[1]->NumberValue();
-  v8::Local<v8::Number> num = Nan::New(arg0 + arg1);
-
-  info.GetReturnValue().Set(num);
-
+  resizedBitmap = Nan::CopyBuffer((char *) destBitmapData, desBitmapDataSize).ToLocalChecked();
+  info.GetReturnValue().Set(resizedBitmap);
+  
 }
 
-void Init(Local<Object> exports) {
-  exports->Set(Nan::New("resize").ToLocalChecked(),
-      Nan::New<FunctionTemplate>(resize)->GetFunction());
+NAN_MODULE_INIT(Init)
+{
+  Nan::Set(target, Nan::New("resize").ToLocalChecked(),
+      Nan::GetFunction(Nan::New<FunctionTemplate>(resize)).ToLocalChecked());
 
 }
 
