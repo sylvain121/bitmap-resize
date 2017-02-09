@@ -72,7 +72,7 @@ NAN_METHOD(resize)
       int px = (int) j*w_ratio;
       int py = (int) i*y_ratio;
 
-      *(destBitmapData + ((i*desWidth)+j)*4) = *(srcBitmapData + ((py*width)+px)*4);
+      *(destBitmapData + ((i*desWidth)+j)*depth) = *(srcBitmapData + ((py*width)+px)*depth);
       if(depth >= 2) *(destBitmapData + ((i*desWidth)+j)*depth+1) = *(srcBitmapData + ((py*width)+px)*depth+1);
       if(depth >= 3) *(destBitmapData + ((i*desWidth)+j)*depth+2) = *(srcBitmapData + ((py*width)+px)*depth+2);
       if(depth >= 4) *(destBitmapData + ((i*desWidth)+j)*depth+3) = *(srcBitmapData + ((py*width)+px)*depth+3);
