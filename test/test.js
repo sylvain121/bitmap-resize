@@ -16,19 +16,27 @@ var image = {
 };
 
 var date = new Date();
-var resizedImage = resize.resizeSync(image);
+resize.initSync(image.width, image.height, image.destwidth, image.destheight);
+console.log("init time : " + (new Date() - date));
+
+
+
+date = new Date();
+var resizedImage = resize.resizeSync(image.data);
 console.log(new Date() - date);
 
-
 var options = {
-    format: jpg.FORMAT_RGBA,
-    width: image.destwidth,
-    height: image.destheight,
-    subsampling: jpg.SAMP_444,
+  format: jpg.FORMAT_RGBA,
+  width: image.destwidth,
+  height: image.destheight,
+  subsampling: jpg.SAMP_GREY,
 
 }
- 
+
 var preallocated = new Buffer(jpg.bufferSize(options))
- 
+
 var encoded = jpg.compressSync(resizedImage, preallocated, options)
+
+console.log(new Date() - date);
 fs.writeFileSync("out.jpg", encoded);
+
