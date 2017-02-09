@@ -1,7 +1,7 @@
 var resize = require('bindings')('resize');
 
-module.exports.initSync = function(width, height, destwidth, destheight) {
-  return resize.init(width, height, destwidth, destheight);
+module.exports.initSync = function(width, height, destwidth, destheight, depth) {
+  return resize.init(width, height, destwidth, destheight, depth);
 }
 
 
